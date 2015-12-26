@@ -44,6 +44,12 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     boolean click = false;
     int sek;
     File DATA_SD;
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        audioList = createListObj(FileManager.fileNew, audioList);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -51,16 +57,20 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         setContentView(R.layout.activity_music_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DATA_SD = new File("/sdcard/media");
         AudioList audioList = new AudioList();
         mediaPlayer = new MediaPlayer();
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
         listView = (ListView) findViewById(R.id.listMusik);
-        audioList = createListObj(null, audioList);
+
+
+        audioList = createListObj(FileManager.fileNew, audioList);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seek();
         showMusicListAndClickable(audioList);
         playB = (Button) findViewById(R.id.play);
+
+
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,8 +81,6 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         });
 
     }
-
-
     private void seek() {
 
 
@@ -104,9 +112,6 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
 
     }
-
-
-
     private void progresSeek(){
 if(!click){
 
@@ -119,18 +124,7 @@ if(!click){
         }
     }).start();
 
-}  else{
-
-        }
-
-
-
-
-
-
-
-
-    }
+}}
     private void showMusicListAndClickable(final AudioList audioList){
         ArrayAdapter<String> adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, audioList.getTitle());
         listView.setAdapter(adapter);
@@ -152,7 +146,7 @@ if(!click){
             DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));}
         else{
             int a = new Integer(String.valueOf(audioList.getId().get(position)));
-            DataUri = Uri.fromFile(  DATA_SD.listFiles()[a]);
+            DataUri = Uri.fromFile(  FileManager.fileNew .listFiles()[a]);
 
         }
         click = true;
@@ -225,7 +219,6 @@ if(!click){
     private AudioList createListObj(File folder, AudioList audioList) {
 
         ArrayList<Long> id = new ArrayList<>();
-        ArrayList<File> file = new ArrayList<>();
         ArrayList<String> title = new ArrayList<>();
         ArrayList<String> artist = new ArrayList<>();
         ArrayList<String> album = new ArrayList<>();
@@ -295,8 +288,6 @@ if(!click){
             audioList.setId(id);
         }
        return audioList; }
-
-
     @Override
     public void onPrepared(MediaPlayer mp) {
         Log.d("log", "onPrepared");
