@@ -2,12 +2,15 @@ package ua.sinoptik.mediaplayer;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,6 +21,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
 
+import org.blinkenlights.jid3.ID3Exception;
+import org.blinkenlights.jid3.MP3File;
+import org.blinkenlights.jid3.MediaFile;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -25,16 +33,17 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         MediaPlayer.OnCompletionListener {
         MediaPlayer mediaPlayer;
         AudioManager am;
-    Uri DATA_URI;
+    Uri DataUri;
+    final private Context CONTEXT = this;
     int pos = 0;
     ListView listView;
     boolean play =false;
     AudioList audioList;
     Button playB;
     private SeekBar seekBar;
-    private final Handler handler = new Handler();
     boolean click = false;
     int sek;
+    File DATA_SD;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -42,15 +51,24 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         setContentView(R.layout.activity_music_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        DATA_SD = new File("/sdcard/media");
+        AudioList audioList = new AudioList();
         mediaPlayer = new MediaPlayer();
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
         listView = (ListView) findViewById(R.id.listMusik);
-        audioList = createListObj();
+        audioList = createListObj(null, audioList);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seek();
         showMusicListAndClickable(audioList);
         playB = (Button) findViewById(R.id.play);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(CONTEXT,FileManager.class));
 
+            }
+        });
 
     }
 
@@ -58,14 +76,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     private void seek() {
 
 
-        seekBar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SeekBar sb = (SeekBar) v;
 
-                mediaPlayer.seekTo(sb.getProgress());
-            }
-        });
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -82,9 +93,9 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                 if (mediaPlayer.isPlaying()) {
 
                     mediaPlayer.seekTo(seekBar.getProgress());
-                    Log.d("seekkkkkk", "" + seekBar.getProgress());
+
                     sek = seekBar.getProgress();
-                    Log.d("seekkkkkk", "" + mediaPlayer.getCurrentPosition());
+
 
                 }
 
@@ -121,7 +132,7 @@ if(!click){
 
     }
     private void showMusicListAndClickable(final AudioList audioList){
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,	android.R.layout.simple_list_item_1, audioList.getTitle());
+        ArrayAdapter<String> adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, audioList.getTitle());
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -136,9 +147,14 @@ if(!click){
         });
 
     }
-
     private void playMusic(AudioList audioList,int position){
-        DATA_URI = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));
+        if (audioList.isAllfile()){
+            DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));}
+        else{
+            int a = new Integer(String.valueOf(audioList.getId().get(position)));
+            DataUri = Uri.fromFile(  DATA_SD.listFiles()[a]);
+
+        }
         click = true;
         if (mediaPlayer != null) {
             try {
@@ -150,7 +166,8 @@ if(!click){
         }
         mediaPlayer = new MediaPlayer();
         try {
-            mediaPlayer.setDataSource(this, DATA_URI);
+
+            mediaPlayer.setDataSource(this, DataUri);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.prepare();
             mediaPlayer.start();
@@ -164,30 +181,11 @@ if(!click){
         progresSeek();
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void onClick(View view) {
         if (mediaPlayer == null)
             return;
         switch (view.getId()) {
             case R.id.play:
-
                 if(play){
                 mediaPlayer.start();
                 play=false;
@@ -224,69 +222,80 @@ if(!click){
 
         }
     }
+    private AudioList createListObj(File folder, AudioList audioList) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private AudioList createListObj(){
-        ContentResolver contentResolver = getContentResolver();
-        Uri uri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = contentResolver.query(uri, null, null, null, null);
-        AudioList audioList = new AudioList();
         ArrayList<Long> id = new ArrayList<>();
+        ArrayList<File> file = new ArrayList<>();
         ArrayList<String> title = new ArrayList<>();
-        if (cursor == null) {
-            // query failed, handle error.
-        } else if (!cursor.moveToFirst()) {
-            // no media on the device
-        } else {
-            int titleColumn = cursor
-                    .getColumnIndex(android.provider.MediaStore.Audio.Media.TITLE);
-            int idColumn = cursor
-                    .getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
-            do {
+        ArrayList<String> artist = new ArrayList<>();
+        ArrayList<String> album = new ArrayList<>();
+        ContentResolver contentResolver = getContentResolver();
+        if (folder == null){
+            audioList.setAllfile(true);
+            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            Cursor cursor = contentResolver.query(uri,null,null,null,null);
+            if (cursor == null) {
+                // query failed, handle error.
+            } else if (!cursor.moveToFirst()) {
+                // no media on the device
+            } else {
+                int titleColumn = cursor
+                        .getColumnIndex(MediaStore.Audio.Media.TITLE);
+                int albumColumn = cursor
+                        .getColumnIndex(MediaStore.Audio.Media.ALBUM);
+                int artistColumn = cursor
+                        .getColumnIndex(MediaStore.Audio.Media.ARTIST);
+                int idColumn = cursor
+                        .getColumnIndex(android.provider.MediaStore.Audio.Media._ID);
+                do {
 
-                long thisId = cursor.getLong(idColumn);
-                id.add(thisId);
-                String thisTitle = cursor.getString(titleColumn);
-                title.add(thisTitle);
+                    long thisId = cursor.getLong(idColumn);
+                    String thisArtist = cursor.getString(artistColumn);
+                    String thisAlbum = cursor.getString(albumColumn);
+                    String thisTitle = cursor.getString(titleColumn);
+                    album.add(thisAlbum);
+                    artist.add(thisArtist);
+                    id.add(thisId);
+                    title.add(thisTitle);
 
-                audioList.setId(id);
-                audioList.setTitle(title);
-            } while (cursor.moveToNext());
+
+
+                    Log.d("seek", "id -" + thisId + " / title " + thisTitle + " / album " + thisAlbum + " / artist " + thisArtist);
+                    audioList.setId(id);
+                    audioList.setTitle(title);
+                    audioList.setAlbume(album);
+                    audioList.setArtist(artist);
+                    audioList.setTitle(title);
+
+                    } while (cursor.moveToNext());
+            }
+           return audioList;}
+
+        else{
+            audioList.setAllfile(false);
+            File[] trek= folder.listFiles();
+
+            for(int i =0;i<trek.length;i++) {
+                MediaFile oMediaFile = new MP3File(trek[i]);
+                title.add(trek[i].getName());
+
+                try {
+                      album.add(oMediaFile.getID3V2Tag().getAlbum());
+                    artist.add(oMediaFile.getID3V2Tag().getArtist());
+
+                                      } catch (ID3Exception e) {
+                    e.printStackTrace();
+                }
+                    id.add((long)i);
+
+            }
+            audioList.setAlbume(album);
+            audioList.setArtist(artist);
+            audioList.setTitle(title);
+            audioList.setId(id);
         }
+       return audioList; }
 
-
-
-
-
-
-        return audioList;
-    }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
