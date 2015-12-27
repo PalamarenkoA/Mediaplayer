@@ -61,7 +61,7 @@ public class FileManager extends AppCompatActivity {
                                     long id) {
 
     if(new File(directoryList.get(position)).isDirectory()){
-                LISTMUSIK = new File(fileList.get(position));
+        LISTMUSIK = new File(directoryList.get(position));
                 createListAndClicable(LISTMUSIK);
 
             }

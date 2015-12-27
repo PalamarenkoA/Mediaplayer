@@ -15,17 +15,11 @@ public class MusikFilter implements FileFilter {
     }
 
     public boolean accept(File pathname) {
-        String extension = getExtension(pathname);
-        return extension.equals(ext);
+        if(pathname.isDirectory()){
+            return false;
+        }
+        return true;
     }
 
-    private String getExtension(File pathname) {
-        String filename = pathname.getPath();
-        int i = filename.lastIndexOf('.');
-        if ( i>0 && i<filename.length()-1 ) {
-            return filename.substring(i+1).toLowerCase();
-        }
-        return "";
-    }
 
 }
