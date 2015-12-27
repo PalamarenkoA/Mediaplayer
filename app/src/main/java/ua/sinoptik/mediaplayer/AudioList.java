@@ -1,6 +1,5 @@
 package ua.sinoptik.mediaplayer;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +12,6 @@ public class AudioList {
     ArrayList<String> artist;
     ArrayList<String> albume;
     boolean allfile;
-    ArrayList<File> fileList;
     public ArrayList<String> getArtist() {
         return artist;
     }
@@ -32,13 +30,6 @@ public class AudioList {
 
 
 
-    public ArrayList<File> getFileList() {
-        return fileList;
-    }
-
-    public void setFileList(ArrayList<File> fileList) {
-        this.fileList = fileList;
-    }
 
     public boolean isAllfile() {
         return allfile;
@@ -57,11 +48,8 @@ public class AudioList {
     }
 
     public int size(){
-if(allfile = true){
-return id.size();}else{
-    return fileList.size();
 
-}}
+return id.size();}
 
     public ArrayList<Long> getId() {
         return id;

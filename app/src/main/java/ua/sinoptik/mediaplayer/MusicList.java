@@ -43,12 +43,12 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     private SeekBar seekBar;
     boolean click = false;
     int sek;
-    File DATA_SD;
+
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        audioList = createListObj(FileManager.fileNew, audioList);
+        audioList = createListObj(FileManager.LISTMUSIK, audioList);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +63,11 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         listView = (ListView) findViewById(R.id.listMusik);
 
 
-        audioList = createListObj(FileManager.fileNew, audioList);
+        audioList = createListObj(FileManager.LISTMUSIK, audioList);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seek();
-        showMusicListAndClickable(audioList);
+        BoxAdapter boxAdapter = new BoxAdapter(this,audioList);
+        showMusicListAndClickable(audioList,boxAdapter);
         playB = (Button) findViewById(R.id.play);
 
 
@@ -125,9 +126,9 @@ if(!click){
     }).start();
 
 }}
-    private void showMusicListAndClickable(final AudioList audioList){
-        ArrayAdapter<String> adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, audioList.getTitle());
-        listView.setAdapter(adapter);
+    private void showMusicListAndClickable(final AudioList audioList,BoxAdapter boxAdapter){
+        ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, audioList.getTitle());
+        listView.setAdapter(boxAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -145,8 +146,7 @@ if(!click){
         if (audioList.isAllfile()){
             DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));}
         else{
-            int a = new Integer(String.valueOf(audioList.getId().get(position)));
-            DataUri = Uri.fromFile(  FileManager.fileNew .listFiles()[a]);
+            DataUri = Uri.fromFile(  FileManager.LISTMUSIK .listFiles()[new Integer(String.valueOf(audioList.getId().get(position)))]);
 
         }
         click = true;

@@ -17,10 +17,12 @@ import java.util.ArrayList;
 public class FileManager extends AppCompatActivity {
     private File currentDirectory = new File("/sdcard/");
     private ArrayAdapter arrayAdapter;
+    private  ArrayList<String>  directoryList;
     private ListView listView;
     private ArrayList<String> fileList;
     final private Context CONTEXT = this;
-    static File fileNew;
+    private File fileNew;
+    static File LISTMUSIK;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +43,14 @@ public class FileManager extends AppCompatActivity {
     private void createListAndClicable(File file){
         if( file.isDirectory()) {
             fileList = new ArrayList();
+            directoryList = new ArrayList();
             for (int i = 0; i < file.listFiles().length; i++) {
-                fileList.add(String.valueOf(file.listFiles()[i]));
+                directoryList.add(String.valueOf(file.listFiles()[i]));
+                if(file.listFiles()[i].isFile()){
+                    fileList.add(String.valueOf(file.listFiles()[i]));
+                }
             }
-            arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, fileList);
+            arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, directoryList);
             listView.setAdapter(arrayAdapter);
 
         }
@@ -54,9 +60,9 @@ public class FileManager extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
                                     long id) {
 
-    if(new File(fileList.get(position)).isDirectory()){
-                fileNew = new File(fileList.get(position));
-                createListAndClicable(fileNew);
+    if(new File(directoryList.get(position)).isDirectory()){
+                LISTMUSIK = new File(fileList.get(position));
+                createListAndClicable(LISTMUSIK);
 
             }
         }
