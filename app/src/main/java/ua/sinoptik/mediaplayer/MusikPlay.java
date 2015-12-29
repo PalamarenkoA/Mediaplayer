@@ -150,7 +150,7 @@ public class MusikPlay extends Fragment {
                     e.printStackTrace();
                 }
                 try {
-                    title.add(folder[i].getName());
+                    title.add(folder[i].getName().substring(0, folder[i].getName().length()-4));
                     id.add(i);
                     duration.add(time(mediaP.getDuration()));
                     Log.d("seek", "id -" + mediaP.getDuration());

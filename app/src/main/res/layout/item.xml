@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center">
 
     <ImageView
         android:layout_width="60dp"
@@ -17,7 +18,8 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_horizontal">
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -44,7 +46,8 @@
                     android:layout_height="30dp"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="3:30"
-                    android:id="@+id/size" />
+                    android:id="@+id/size"
+                    android:layout_weight="0" />
             </LinearLayout>
 
         </LinearLayout>
@@ -60,7 +63,8 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Исполнитель"
                 android:id="@+id/artist"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:layout_weight="0" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -75,7 +79,8 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="album"
                 android:id="@+id/album"
-                android:textSize="16dp" />
+                android:textSize="16dp"
+                android:layout_weight="0" />
         </LinearLayout>
     </LinearLayout>
 

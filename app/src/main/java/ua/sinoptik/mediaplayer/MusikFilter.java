@@ -18,7 +18,12 @@ public class MusikFilter implements FileFilter {
         if(pathname.isDirectory()){
             return false;
         }
-        return true;
+
+       if( pathname.getName().regionMatches(pathname.getName().length()-3,"mp3",0,3)){
+            return true;
+        }
+
+          return false;
     }
 
 
