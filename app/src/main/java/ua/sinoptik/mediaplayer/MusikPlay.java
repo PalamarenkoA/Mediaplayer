@@ -36,6 +36,8 @@ public class MusikPlay extends Fragment {
     ListView listView;
     File[] trek;
     AudioList audioList;
+    BoxAdapter boxAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,14 +49,20 @@ public class MusikPlay extends Fragment {
         if (FileManegerM.LISTMUSIK != null) {
             trek = FileManegerM.LISTMUSIK.listFiles(musikFilter);
         }
-        audioList = createListObj(trek, audioList);
-        BoxAdapter boxAdapter = new BoxAdapter(MusicList.CONTEXT, audioList);
+        audioList = createListObj(trek);
+
+        boxAdapter = new BoxAdapter(v.getContext(), audioList,-1);
+        boxAdapter.notifyDataSetChanged();
+
         listView = (ListView) v.findViewById(R.id.listView2);
         listView.setAdapter(boxAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 listener.itemClick(position);
+                boxAdapter.Up(position);
+
+
             }
         });
 
@@ -82,14 +90,14 @@ public class MusikPlay extends Fragment {
             }
         }
         return time;}
-    private AudioList createListObj(File[] folder, AudioList audioList) {
+    private AudioList createListObj(File[] folder) {
         ArrayList<Integer> id = new ArrayList<>();
         ArrayList<String> title = new ArrayList<>();
         ArrayList<String> artist = new ArrayList<>();
         ArrayList<String> album = new ArrayList<>();
         ArrayList<String> duration = new ArrayList<>();
         ContentResolver contentResolver = MusicList.CONTEXT.getContentResolver();
-        audioList = new AudioList();
+      AudioList  audioList = new AudioList();
         if (folder == null) {
             audioList.setAllfile(true);
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;

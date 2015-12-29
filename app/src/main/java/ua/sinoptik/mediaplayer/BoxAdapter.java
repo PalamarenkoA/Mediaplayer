@@ -15,10 +15,12 @@ public class BoxAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater lInflater;
     AudioList audioList;
+    int play;
 
-    BoxAdapter(Context context, AudioList audioList) {
+    BoxAdapter(Context context, AudioList audioList,int play) {
         ctx = context;
         this.audioList = audioList;
+        this.play = play;
         lInflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -40,6 +42,11 @@ public class BoxAdapter extends BaseAdapter {
         return position;
     }
 
+  public void Up(int pos){
+      this.play = pos;
+      this.notifyDataSetChanged();
+  }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -51,7 +58,11 @@ public class BoxAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.name)).setText(audioList.getTitle().get(position));
         ((TextView) view.findViewById(R.id.artist)).setText(audioList.getArtist().get(position));
         ((TextView) view.findViewById(R.id.album)).setText(audioList.getAlbume().get(position));
-        ((ImageView) view.findViewById(R.id.imageView)).setImageResource(R.drawable.ic_action);
+        if(position == play){
+        ((ImageView) view.findViewById(R.id.imageView)).setImageResource(R.drawable.ic_action);}
+        else{
+        ((ImageView) view.findViewById(R.id.imageView)).setImageResource(R.drawable.ic_stop);
+        }
 
         return view;
     }
