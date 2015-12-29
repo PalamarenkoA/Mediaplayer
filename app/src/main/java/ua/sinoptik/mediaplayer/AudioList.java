@@ -17,7 +17,7 @@ public class AudioList {
     }
 
     ArrayList<String> duration;
-    ArrayList<Long> id;
+    ArrayList<Integer> id;
     ArrayList<String> title;
     ArrayList<String> artist;
     ArrayList<String> albume;
@@ -61,11 +61,11 @@ public class AudioList {
 
 return id.size();}
 
-    public ArrayList<Long> getId() {
+    public ArrayList<Integer> getId() {
         return id;
     }
 
-    public void setId(ArrayList<Long> id) {
+    public void setId(ArrayList<Integer> id) {
         this.id = id;
     }
 }

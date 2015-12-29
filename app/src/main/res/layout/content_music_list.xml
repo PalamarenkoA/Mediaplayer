@@ -8,25 +8,25 @@
     tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/textView5" />
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="300dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:layout_weight="1">
 
-        <ListView
+        <FrameLayout
+            android:id="@+id/folder"
+            android:name="ua.sinoptik.mediaplayer.MusikPlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/listMusik" />
-    </LinearLayout>
+            android:layout_weight="1"
+            tools:layout="@layout/fragment_musik_play">
+        </FrameLayout>
+
+      </FrameLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout6"
@@ -37,7 +37,8 @@
         android:orientation="vertical"
         android:layout_gravity="bottom|end"
         android:layout_below="@+id/linearLayout1"
-        android:background="@color/background_floating_material_light">
+        android:background="@color/background_floating_material_light"
+        android:layout_weight="0">
 
         <LinearLayout
             android:orientation="horizontal"
