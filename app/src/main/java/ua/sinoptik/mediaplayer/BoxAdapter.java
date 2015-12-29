@@ -47,6 +47,7 @@ public class BoxAdapter extends BaseAdapter {
             view = lInflater.inflate(R.layout.item, parent, false);
         }
 
+        ((TextView) view.findViewById(R.id.size)).setText(String.valueOf(audioList.getDuration().get(position)));
         ((TextView) view.findViewById(R.id.name)).setText(audioList.getTitle().get(position));
         ((TextView) view.findViewById(R.id.artist)).setText(audioList.getArtist().get(position));
         ((TextView) view.findViewById(R.id.album)).setText(audioList.getAlbume().get(position));

@@ -7,6 +7,16 @@ import java.util.ArrayList;
  */
 public class AudioList {
 
+
+    public ArrayList<String> getDuration() {
+        return duration;
+    }
+
+    public void setDuration(ArrayList<String> duration) {
+        this.duration = duration;
+    }
+
+    ArrayList<String> duration;
     ArrayList<Long> id;
     ArrayList<String> title;
     ArrayList<String> artist;

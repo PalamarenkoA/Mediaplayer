@@ -16,11 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SeekBar;
-
+import android.widget.TextView;
+import android.os.Handler;
 import org.blinkenlights.jid3.ID3Exception;
 import org.blinkenlights.jid3.MP3File;
 import org.blinkenlights.jid3.MediaFile;
@@ -28,6 +28,8 @@ import org.blinkenlights.jid3.MediaFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+
 
 public class MusicList extends AppCompatActivity implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener {
@@ -45,6 +47,9 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     int sek;
     File[] trek;
     MusikFilter musikFilter;
+    TextView duration;
+    TextView size;
+    Handler durationUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,8 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         setContentView(R.layout.activity_music_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        duration = (TextView) findViewById(R.id.duration);
+        size = (TextView) findViewById(R.id.size);
         AudioList audioList = new AudioList();
         mediaPlayer = new MediaPlayer();
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -64,7 +71,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
         audioList = createListObj(trek, audioList);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
-        seek();
+        seekClik();
         BoxAdapter boxAdapter = new BoxAdapter(this, audioList);
         showMusicListAndClickable(audioList, boxAdapter);
         playB = (Button) findViewById(R.id.play);
@@ -78,7 +85,12 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
             }
         });
-
+        durationUp = new Handler() {
+            public void handleMessage(android.os.Message msg) {
+                // обновляем TextView
+               duration.setText(time(mediaPlayer.getCurrentPosition()));
+            };
+        };
     }
 
     @Override
@@ -90,7 +102,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         audioList = createListObj(trek, audioList);
     }
 
-    private void seek() {
+    private void seekClik() {
 
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -123,7 +135,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
     private void progresSeek() {
         if (!click) {
-
+            durationUp.sendEmptyMessage(0);
             seekBar.setProgress(mediaPlayer.getCurrentPosition());
             new Thread(new Runnable() {
 
@@ -137,7 +149,6 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     }
 
     private void showMusicListAndClickable(final AudioList audioList, BoxAdapter boxAdapter) {
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, audioList.getTitle());
         listView.setAdapter(boxAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -145,7 +156,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
             public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
                                     long id) {
                 pos = position;
-
+                size.setText(audioList.getDuration().get(pos));
                 playMusic(audioList, pos);
 
             }
@@ -227,13 +238,30 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
         }
     }
-
+    private String time(long milisek){
+        String time;
+        if(new Date(milisek).getMinutes()<10){
+            if(new Date(milisek).getSeconds()<10){
+                time ="0"+new Date(milisek).getMinutes()+":0"+new Date(milisek).getSeconds();
+            }else{
+                time ="0"+new Date(milisek).getMinutes()+":"+new Date(milisek).getSeconds();
+            }
+        }else{
+            if(new Date(milisek).getSeconds()<10){
+                time =new Date(milisek).getMinutes()+":0"+new Date(milisek).getSeconds();
+            }else{
+                time =new Date(milisek).getMinutes()+":"+new Date(milisek).getSeconds();
+            }
+        }
+    return time;}
     private AudioList createListObj(File[] folder, AudioList audioList) {
         ArrayList<Long> id = new ArrayList<>();
         ArrayList<String> title = new ArrayList<>();
         ArrayList<String> artist = new ArrayList<>();
         ArrayList<String> album = new ArrayList<>();
+        ArrayList<String> duration = new ArrayList<>();
         ContentResolver contentResolver = getContentResolver();
+        audioList = new AudioList();
         if (folder == null) {
             audioList.setAllfile(true);
             Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -245,6 +273,8 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
             } else {
                 int titleColumn = cursor
                         .getColumnIndex(MediaStore.Audio.Media.TITLE);
+                int durationColumn = cursor
+                        .getColumnIndex(MediaStore.Audio.Media.DURATION);
                 int albumColumn = cursor
                         .getColumnIndex(MediaStore.Audio.Media.ALBUM);
                 int artistColumn = cursor
@@ -254,18 +284,23 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                 do {
 
                     long thisId = cursor.getLong(idColumn);
+                    long thisduration = cursor.getLong(durationColumn);
                     String thisArtist = cursor.getString(artistColumn);
                     String thisAlbum = cursor.getString(albumColumn);
                     String thisTitle = cursor.getString(titleColumn);
+                    duration.add(time(thisduration));
+
+
+
                     album.add(thisAlbum);
                     artist.add(thisArtist);
                     id.add(thisId);
                     title.add(thisTitle);
 
 
-                    Log.d("seek", "id -" + thisId + " / title " + thisTitle + " / album " + thisAlbum + " / artist " + thisArtist);
+
                     audioList.setId(id);
-                    audioList.setTitle(title);
+                    audioList.setDuration(duration);
                     audioList.setAlbume(album);
                     audioList.setArtist(artist);
                     audioList.setTitle(title);
@@ -277,11 +312,29 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
             audioList.setAllfile(false);
             for (int i = 0; i < folder.length; i++) {
                 MediaFile oMediaFile = new MP3File(folder[i]);
+                MediaPlayer mediaP = new MediaPlayer();
 
-
+//                if (mediaP != null) {
+//                    try {
+//                        mediaP.release();
+//                        mediaP = null;
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                mediaP = new MediaPlayer();
+                           try {
+                    mediaP.setDataSource(String.valueOf(folder[i]));
+                    mediaP.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    mediaP.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 try {
                     title.add(folder[i].getName());
                     id.add((long) i);
+                    duration.add(time(mediaP.getDuration()));
+                    Log.d("seek", "id -" + mediaP.getDuration());
                     album.add(oMediaFile.getID3V2Tag().getAlbum());
                     artist.add(oMediaFile.getID3V2Tag().getArtist());
 
@@ -291,6 +344,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
 
             }
+            audioList.setDuration(duration);
             audioList.setAlbume(album);
             audioList.setArtist(artist);
             audioList.setTitle(title);
