@@ -24,7 +24,6 @@ import org.blinkenlights.jid3.MediaFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
 
 public class MusikPlay extends Fragment {
@@ -74,28 +73,13 @@ public class MusikPlay extends Fragment {
         Log.d(LOG_TAG, "1 " + getActivity());
 
     }
-    private String time(long milisek){
-        String time;
-        if(new Date(milisek).getMinutes()<10){
-            if(new Date(milisek).getSeconds()<10){
-                time ="0"+new Date(milisek).getMinutes()+":0"+new Date(milisek).getSeconds();
-            }else{
-                time ="0"+new Date(milisek).getMinutes()+":"+new Date(milisek).getSeconds();
-            }
-        }else{
-            if(new Date(milisek).getSeconds()<10){
-                time =new Date(milisek).getMinutes()+":0"+new Date(milisek).getSeconds();
-            }else{
-                time =new Date(milisek).getMinutes()+":"+new Date(milisek).getSeconds();
-            }
-        }
-        return time;}
+
     private AudioList createListObj(File[] folder) {
         ArrayList<Integer> id = new ArrayList<>();
         ArrayList<String> title = new ArrayList<>();
         ArrayList<String> artist = new ArrayList<>();
         ArrayList<String> album = new ArrayList<>();
-        ArrayList<String> duration = new ArrayList<>();
+        ArrayList<Long> duration = new ArrayList<>();
         ContentResolver contentResolver = MusicList.CONTEXT.getContentResolver();
       AudioList  audioList = new AudioList();
         if (folder == null) {
@@ -124,7 +108,7 @@ public class MusikPlay extends Fragment {
                     String thisArtist = cursor.getString(artistColumn);
                     String thisAlbum = cursor.getString(albumColumn);
                     String thisTitle = cursor.getString(titleColumn);
-                    duration.add(time(thisduration));
+                    duration.add(thisduration);
 
 
 
@@ -160,7 +144,7 @@ public class MusikPlay extends Fragment {
                 try {
                     title.add(folder[i].getName().substring(0, folder[i].getName().length()-4));
                     id.add(i);
-                    duration.add(time(mediaP.getDuration()));
+                    duration.add(Long.valueOf(mediaP.getDuration()));
                     Log.d("seek", "id -" + mediaP.getDuration());
                     album.add(oMediaFile.getID3V2Tag().getAlbum());
                     artist.add(oMediaFile.getID3V2Tag().getArtist());

@@ -46,6 +46,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     TextView duration;
     TextView size;
     Handler durationUp;
+    Handler nextSong;
     static Context CONTEXT;
     FragmentTransaction fTrans;
     MusikPlay musikPlay;
@@ -100,10 +101,17 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
             }
         });
 
-
+//        nextSong = new Handler(){
+//            public void handleMessage(android.os.Message msg) {
+//                click = true;
+//
+//                playMusic(audioList,pos);
+//                click = false;
+//            };
+//        };
         durationUp = new Handler() {
             public void handleMessage(android.os.Message msg) {
-                // обновляем TextView
+
                duration.setText(time(mediaPlayer.getCurrentPosition()));
             };
         };
@@ -140,15 +148,19 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
     }
 
-    private void progresSeek() {
+    private void progres() {
         if (!click) {
+
             durationUp.sendEmptyMessage(0);
-            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            Log.d("nfu",""+mediaPlayer.getCurrentPosition() + "саизе " + audioList.duration.get(pos));
+
+if(mediaPlayer != null){
+                 seekBar.setProgress(mediaPlayer.getCurrentPosition());}
             new Thread(new Runnable() {
 
                 public void run() {
 
-                    progresSeek();
+                    progres();
                 }
             }).start();
 
@@ -173,7 +185,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         }
     }
 
-    private void playMusic(AudioList audioList, int position) {
+    private void playMusic(final AudioList audioList, int position) {
         if (audioList.isAllfile()) {
             DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));
         } else {
@@ -185,12 +197,19 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
             try {
                 mediaPlayer.stop();
                 mediaPlayer.release();
-                mediaPlayer = null;
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+
+                playMusic(audioList,pos);
+            }
+        });
         try {
 
             mediaPlayer.setDataSource(this, DataUri);
@@ -204,7 +223,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         playB.setBackgroundResource(R.drawable.ic_stop);
         play = false;
         click = false;
-        progresSeek();
+        progres();
 
     }
 
@@ -234,7 +253,9 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                 break;
             case R.id.forvard:
                 pos += 1;
-                Log.d("log", "position" + pos);
+                if(pos<audioList.getId().size()){
+                    pos = audioList.getId().size();
+                }
                 playMusic(audioList, pos);
                 break;
 //            case R.id.button3:
@@ -267,7 +288,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
     private AudioList createListObj(File[] folder) {
         ArrayList<Integer> id = new ArrayList<>();
-        ArrayList<String> duration = new ArrayList<>();
+        ArrayList<Long> duration = new ArrayList<>();
         ContentResolver contentResolver = MusicList.CONTEXT.getContentResolver();
         AudioList audioList = new AudioList();
         if (folder == null) {
@@ -288,7 +309,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
                     int thisId = cursor.getInt(idColumn);
                     long thisduration = cursor.getLong(durationColumn);
-                    duration.add(time(thisduration));
+                    duration.add(thisduration);
                     id.add(thisId);
                     audioList.setId(id);
                     audioList.setDuration(duration);
@@ -312,7 +333,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                 }
 
                     id.add(i);
-                    duration.add(time(mediaP.getDuration()));
+                    duration.add(Long.valueOf(mediaP.getDuration()));
                     Log.d("seek", "id -" + mediaP.getDuration());
 
 
@@ -340,7 +361,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     @Override
     public void itemClick(int position) {
         pos = position;
-        size.setText(audioList.getDuration().get(pos));
+        size.setText(time(audioList.getDuration().get(pos)));
         playMusic(audioList, pos);
     }
 }

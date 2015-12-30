@@ -8,15 +8,15 @@ import java.util.ArrayList;
 public class AudioList {
 
 
-    public ArrayList<String> getDuration() {
+    public ArrayList<Long> getDuration() {
         return duration;
     }
 
-    public void setDuration(ArrayList<String> duration) {
+    public void setDuration(ArrayList<Long> duration) {
         this.duration = duration;
     }
 
-    ArrayList<String> duration;
+    ArrayList<Long> duration;
     ArrayList<Integer> id;
     ArrayList<String> title;
     ArrayList<String> artist;

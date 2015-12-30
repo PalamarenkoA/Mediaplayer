@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Date;
+
 /**
  * Created by Админ on 27.12.2015.
  */
@@ -46,7 +48,22 @@ public class BoxAdapter extends BaseAdapter {
       this.play = pos;
       this.notifyDataSetChanged();
   }
-
+    private String time(long milisek){
+        String time;
+        if(new Date(milisek).getMinutes()<10){
+            if(new Date(milisek).getSeconds()<10){
+                time ="0"+new Date(milisek).getMinutes()+":0"+new Date(milisek).getSeconds();
+            }else{
+                time ="0"+new Date(milisek).getMinutes()+":"+new Date(milisek).getSeconds();
+            }
+        }else{
+            if(new Date(milisek).getSeconds()<10){
+                time =new Date(milisek).getMinutes()+":0"+new Date(milisek).getSeconds();
+            }else{
+                time =new Date(milisek).getMinutes()+":"+new Date(milisek).getSeconds();
+            }
+        }
+        return time;}
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -54,7 +71,7 @@ public class BoxAdapter extends BaseAdapter {
             view = lInflater.inflate(R.layout.item, parent, false);
         }
 
-        ((TextView) view.findViewById(R.id.size)).setText(String.valueOf(audioList.getDuration().get(position)));
+        ((TextView) view.findViewById(R.id.size)).setText(time(audioList.getDuration().get(position)));
         ((TextView) view.findViewById(R.id.name)).setText(audioList.getTitle().get(position));
         ((TextView) view.findViewById(R.id.artist)).setText(audioList.getArtist().get(position));
         ((TextView) view.findViewById(R.id.album)).setText(audioList.getAlbume().get(position));
