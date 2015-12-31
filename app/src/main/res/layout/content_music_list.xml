@@ -97,7 +97,13 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/textView2"
                 android:layout_weight="1" />
-
+            <Button
+                android:id="@+id/rem"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:background="@drawable/ic_rem" />
             <Button
                 android:id="@+id/back"
                 android:layout_width="50dp"
@@ -121,6 +127,14 @@
                 android:onClick="onClick"
                 android:textSize="12sp"
                 android:background="@drawable/ic_b"
+                android:layout_gravity="center_horizontal" />
+            <Button
+                android:id="@+id/rand"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:background="@drawable/ic_random"
                 android:layout_gravity="center_horizontal" />
 
             <TextView

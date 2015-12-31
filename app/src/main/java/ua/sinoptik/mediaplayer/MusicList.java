@@ -30,7 +30,7 @@ import java.util.Date;
 
 
 public class MusicList extends AppCompatActivity implements MediaPlayer.OnPreparedListener,
-        MediaPlayer.OnCompletionListener,MusikPlay.onItemClickListener {
+      MusikPlay.onItemClickListener {
     MediaPlayer mediaPlayer;
     AudioManager am;
     Uri DataUri;
@@ -52,15 +52,22 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     MusikPlay musikPlay;
     FileManegerM fileManegerM;
     boolean frags =false;
+    Button rand;
+    Button rem;
+    PlaybackMode playbackMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        playbackMode = new PlaybackMode();
         musikPlay = new MusikPlay();
         fileManegerM = new FileManegerM();
         setContentView(R.layout.activity_music_list);
         fTrans = getFragmentManager().beginTransaction();
         CONTEXT = this;
+        rand = (Button) findViewById(R.id.rand);
+        rem =(Button) findViewById(R.id.rem);
         playB = (Button) findViewById(R.id.play);
         duration = (TextView) findViewById(R.id.duration);
         size = (TextView) findViewById(R.id.size);
@@ -101,14 +108,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
             }
         });
 
-//        nextSong = new Handler(){
-//            public void handleMessage(android.os.Message msg) {
-//                click = true;
-//
-//                playMusic(audioList,pos);
-//                click = false;
-//            };
-//        };
+
         durationUp = new Handler() {
             public void handleMessage(android.os.Message msg) {
 
@@ -152,10 +152,20 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         if (!click) {
 
             durationUp.sendEmptyMessage(0);
-            Log.d("nfu",""+mediaPlayer.getCurrentPosition() + "саизе " + audioList.duration.get(pos));
+            Log.d("nfu", "" + mediaPlayer.getCurrentPosition() + "саизе " + audioList.duration.get(pos));
 
-if(mediaPlayer != null){
-                 seekBar.setProgress(mediaPlayer.getCurrentPosition());}
+            try {
+                seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            } catch (Exception e) {
+                Log.d("зег", "ошибос");
+                e.printStackTrace();
+            }
+
+
+
+
+
+
             new Thread(new Runnable() {
 
                 public void run() {
@@ -185,7 +195,7 @@ if(mediaPlayer != null){
         }
     }
 
-    private void playMusic(final AudioList audioList, int position) {
+    private void playMusic(final AudioList audioList, final int position) {
         if (audioList.isAllfile()) {
             DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));
         } else {
@@ -206,10 +216,19 @@ if(mediaPlayer != null){
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-
-                playMusic(audioList,pos);
+                switch (playbackMode.Mode()) {
+                    case 1:
+                        playMusic(audioList, position);
+                    break;
+                    case 2:
+                        playMusic(audioList, (int) (Math.random()*audioList.getId().size()));
+                    break;
+                    case 3:
+                        pos +=1;
+                        playMusic(audioList, pos);
+                    break;
             }
-        });
+        }});
         try {
 
             mediaPlayer.setDataSource(this, DataUri);
@@ -242,9 +261,30 @@ if(mediaPlayer != null){
                     playB.setBackgroundResource(R.drawable.ic_action);
                 }
                 break;
-//            case R.id.btnStop:
-//                mediaPlayer.stop();
-//                break;
+            case R.id.rem:
+            if(playbackMode.isLoop()){
+                rem.setBackgroundResource(R.drawable.ic_rem);
+                playbackMode.setLoop(false);
+                  }else{
+                rem.setBackgroundResource(R.drawable.ic_remon);
+
+                playbackMode.setLoop(true);
+
+            }
+                break;
+            case R.id.rand:
+                if(playbackMode.isRandom()){
+                    rand.setBackgroundResource(R.drawable.ic_random);
+                    playbackMode.setRandom(false);
+                }else{
+
+                    rand.setBackgroundResource(R.drawable.ic_randon);
+                    playbackMode.setRandom(true);
+
+                }
+
+
+                break;
             case R.id.back:
                 pos -= 1;
                 if (pos < 0) pos = 0;
@@ -352,11 +392,7 @@ if(mediaPlayer != null){
         mp.start();
     }
 
-    @Override
-    public void onCompletion(MediaPlayer mp) {
 
-        Log.d("log", "onCompletion");
-    }
 
     @Override
     public void itemClick(int position) {
