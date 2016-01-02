@@ -28,6 +28,7 @@ import org.blinkenlights.jid3.MediaFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -384,13 +385,18 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
                     int thisId = cursor.getInt(idColumn);
                     long thisduration = cursor.getLong(durationColumn);
-                    String thisArtist = cursor.getString(artistColumn);
-                    String thisAlbum = cursor.getString(albumColumn);
-                    String thisTitle = cursor.getString(titleColumn);
+                    String thisArtist = "";
+                    String thisAlbum =  "";
+                    String thisTitle =  "";
+                    try {
+                        thisAlbum  =  new String(cursor.getString(albumColumn).getBytes("ISO-8859-1"), "cp1251");
+                        thisTitle  =  new String(cursor.getString(titleColumn));
+                        thisArtist =  new String(cursor.getString(artistColumn).getBytes("ISO-8859-1"), "cp1251");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
                     duration.add(thisduration);
-
-
-
                     album.add(thisAlbum);
                     artist.add(thisArtist);
                     id.add(thisId);
@@ -426,8 +432,11 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                     id.add(i);
                     duration.add(Long.valueOf(mediaP.getDuration()));
                     Log.d("seek", "id -" + mediaP.getDuration());
-                    album.add(oMediaFile.getID3V2Tag().getAlbum());
-                    artist.add(oMediaFile.getID3V2Tag().getArtist());
+
+
+
+                    album.add(new String(oMediaFile.getID3V2Tag().getAlbum().getBytes("ISO-8859-1"), "cp1251"));
+                    artist.add( new String(oMediaFile.getID3V2Tag().getArtist().getBytes("ISO-8859-1"), "cp1251"));
 
                 } catch (Exception e) {
                     album.add("");
