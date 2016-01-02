@@ -45,10 +45,11 @@ public class MusikPlay extends Fragment {
         View v = inflater.inflate(R.layout.fragment_musik_play, container, false);
         audioList = new AudioList();
         MusikFilter musikFilter = new MusikFilter("");
-        if (FileManegerM.LISTMUSIK != null) {
+        if (FileManegerM.LISTMUSIK != null& !MusicList.allfile) {
             trek = FileManegerM.LISTMUSIK.listFiles(musikFilter);
-        }
-        audioList = createListObj(trek);
+            audioList = createListObj(trek);
+        }else{
+        audioList = createListObj(null);}
 
         boxAdapter = new BoxAdapter(v.getContext(), audioList,-1);
 

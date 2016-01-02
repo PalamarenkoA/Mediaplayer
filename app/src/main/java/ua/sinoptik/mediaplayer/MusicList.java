@@ -57,6 +57,7 @@ if(!frags){
    static int pos = 0;
     boolean play = false;
     AudioList audioList;
+    static boolean allfile = false;
     Button playB;
     private SeekBar seekBar;
     boolean click = false;
@@ -118,7 +119,7 @@ if(!frags){
                     if (FileManegerM.LISTMUSIK != null) {
                         trek = FileManegerM.LISTMUSIK.listFiles(musikFilter);
                     }
-                    audioList = createListObj(trek);
+
                 fTrans = getFragmentManager().beginTransaction();
                 fTrans.replace(R.id.linearLayout1, musikPlay);
                 fTrans.commit();
