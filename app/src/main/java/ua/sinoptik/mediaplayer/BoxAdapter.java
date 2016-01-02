@@ -78,7 +78,7 @@ public class BoxAdapter extends BaseAdapter {
         if(position == play){
         ((ImageView) view.findViewById(R.id.imageView)).setImageResource(R.drawable.ic_action);}
         else{
-        ((ImageView) view.findViewById(R.id.imageView)).setImageResource(R.drawable.ic_stop);
+        ((ImageView) view.findViewById(R.id.imageView)).setImageResource(R.drawable.ic_note);
         }
 
         return view;

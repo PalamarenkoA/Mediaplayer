@@ -130,6 +130,13 @@
                 android:id="@+id/textView2"
                 android:layout_weight="1" />
             <Button
+                android:id="@+id/all"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:background="@drawable/ic_all" />
+            <Button
                 android:id="@+id/rem"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -167,6 +174,14 @@
                 android:onClick="onClick"
                 android:textSize="12sp"
                 android:background="@drawable/ic_random"
+                android:layout_gravity="center_horizontal" />
+            <Button
+                android:id="@+id/folger"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onClick"
+                android:textSize="12sp"
+                android:background="@drawable/ic_folger"
                 android:layout_gravity="center_horizontal" />
 
             <TextView

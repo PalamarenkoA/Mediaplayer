@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.io.File;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 
 public class FileManegerM extends Fragment {
     private File currentDirectory = new File("/sdcard/");
-    private ArrayAdapter arrayAdapter;
+    private FileAdapter arrayAdapter;
     private ArrayList<String> directoryList;
     private ListView listView;
     private ArrayList<String> fileList;
@@ -49,8 +48,9 @@ public class FileManegerM extends Fragment {
                     fileList.add(String.valueOf(file.listFiles()[i]));
                 }
             }
-            arrayAdapter = new ArrayAdapter(MusicList.CONTEXT, android.R.layout.simple_list_item_1, directoryList);
+            arrayAdapter = new FileAdapter(MusicList.CONTEXT,directoryList);
             listView.setAdapter(arrayAdapter);
+
 
         }
 

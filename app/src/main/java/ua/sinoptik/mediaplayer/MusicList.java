@@ -179,7 +179,7 @@ if(!frags){
         if (!click) {
 
             durationUp.sendEmptyMessage(0);
-            Log.d("nfu", "" + mediaPlayer.getCurrentPosition() + "саизе " + audioList.duration.get(pos));
+
 
             try {
                 seekBar.setProgress(mediaPlayer.getCurrentPosition());
