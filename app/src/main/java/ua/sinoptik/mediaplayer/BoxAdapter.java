@@ -45,6 +45,10 @@ public class BoxAdapter extends BaseAdapter {
         return position;
     }
 
+  public void UpAudioList(AudioList audioList){
+      this.audioList = audioList;
+      this.notifyDataSetChanged();
+  }
   public void Up(int pos){
       this.play = pos;
       this.notifyDataSetChanged();

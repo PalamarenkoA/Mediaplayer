@@ -1,6 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".MusicList">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MusicList">
+
+
+    <item android:id="@+id/free"
+        android:title="БЕЗ СОРТИРОВКИ"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/sort_duration"
+        android:title="По длине"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/sort_artist"
+        android:title="По артисту"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/sort_album"
+        android:title="По альбому"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

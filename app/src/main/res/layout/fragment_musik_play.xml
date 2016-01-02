@@ -3,10 +3,12 @@
     android:layout_height="match_parent" tools:context="ua.sinoptik.mediaplayer.MusikPlay">
 
 
+
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView2"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1" />
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="10dp" />
 </LinearLayout>

@@ -12,9 +12,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -28,6 +30,8 @@ import org.blinkenlights.jid3.MediaFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 
@@ -38,23 +42,8 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     Uri DataUri;
 
 
-
-    public int changePos(int pos) {
-
-        if(pos>=audioList.getId().size()){
-            pos = 0;
-        }
-        if(pos<0){
-            pos = 0;
-        }
-       this.pos = pos;
-if(!frags){
-    ((ListView) musikPlay.getView().findViewById(R.id.listView2)).smoothScrollToPosition(pos);}
-
-        MusikPlay.boxAdapter.Up(pos);
-    return pos;}
-
-   static int pos = 0;
+    public static BoxAdapter boxAdapter;
+    static int pos = 0;
     boolean play = false;
     AudioList audioList;
     static boolean allfile = false;
@@ -78,7 +67,7 @@ if(!frags){
     Button rand;
     Button rem;
     PlaybackMode playbackMode;
-
+Toolbar toolbarl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -87,6 +76,9 @@ if(!frags){
         musikPlay = new MusikPlay();
         fileManegerM = new FileManegerM();
         setContentView(R.layout.activity_music_list);
+        toolbarl = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbarl);
+
         fTrans = getFragmentManager().beginTransaction();
         CONTEXT = this;
         rand = (Button) findViewById(R.id.rand);
@@ -103,40 +95,10 @@ if(!frags){
 
         musikFilter = new MusikFilter("хай");
         audioList = createListObj(trek);
-
+        boxAdapter = new BoxAdapter(CONTEXT, audioList,-1);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seekClik();
         showMusicFragment();
-
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(frags){
-                    if (FileManegerM.LISTMUSIK != null) {
-                        trek = FileManegerM.LISTMUSIK.listFiles(musikFilter);
-                    }
-
-                fTrans = getFragmentManager().beginTransaction();
-                fTrans.replace(R.id.linearLayout1, musikPlay);
-                fTrans.commit();
-                audioList = createListObj(trek);
-                MusikPlay.boxAdapter.Up(pos);
-                frags = false;
-                }else{
-                    fTrans = getFragmentManager().beginTransaction();
-                    fTrans.replace(R.id.linearLayout1, fileManegerM);
-                    fTrans.commit();
-                    frags =true;
-
-                }
-            }
-        });
-
-
         durationUp = new Handler() {
             public void handleMessage(android.os.Message msg) {
 
@@ -144,34 +106,49 @@ if(!frags){
             };
         };
     }
+    public int changePos(int pos) {
 
+        if(pos>=audioList.getId().size()){
+            pos = 0;
+        }
+        if(pos<0){
+            pos = 0;
+        }
+        this.pos = pos;
+        if(!frags){
+            ((ListView) musikPlay.getView().findViewById(R.id.listView2)).smoothScrollToPosition(pos);}
+
+        boxAdapter.Up(pos);
+        return pos;}
     private void seekClik() {
 
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+
+    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            if (mediaPlayer.isPlaying()) {
+
+                mediaPlayer.seekTo(seekBar.getProgress());
+
+                sek = seekBar.getProgress();
+
 
             }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (mediaPlayer.isPlaying()) {
-
-                    mediaPlayer.seekTo(seekBar.getProgress());
-
-                    sek = seekBar.getProgress();
-
-
-                }
-
-            }
-        });
+        }
+    });
 
 
     }
@@ -235,6 +212,7 @@ if(!frags){
         album.setText(audioList.getAlbume().get(pos));
        artist.setText(audioList.getArtist().get(pos));
         click = true;
+
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.stop();
@@ -285,6 +263,26 @@ if(!frags){
         if (mediaPlayer == null)
             return;
         switch (view.getId()) {
+            case R.id.folger:
+                if(frags){
+                    if (FileManegerM.LISTMUSIK != null) {
+                        trek = FileManegerM.LISTMUSIK.listFiles(musikFilter);
+                    }
+
+                    fTrans = getFragmentManager().beginTransaction();
+                    fTrans.replace(R.id.linearLayout1, musikPlay);
+                    fTrans.commit();
+                    audioList = createListObj(trek);
+                    boxAdapter = new BoxAdapter(CONTEXT, audioList,-1);
+                    frags = false;
+                }else{
+                    fTrans = getFragmentManager().beginTransaction();
+                    fTrans.replace(R.id.linearLayout1, fileManegerM);
+                    fTrans.commit();
+                    frags =true;
+
+                }
+                break;
             case R.id.play:
                 if (play) {
                     mediaPlayer.start();
@@ -327,15 +325,6 @@ if(!frags){
                 pos += 1;
                 playMusicAndSet(audioList, changePos(pos));
                 break;
-//            case R.id.button3:
-//                Log.d("log", "Playing " + mediaPlayer.isPlaying());
-//                Log.d("log", "Time " + mediaPlayer.getCurrentPosition() + " / "
-//                        + mediaPlayer.getDuration());
-//                Log.d("log", "Looping " + mediaPlayer.isLooping());
-//                Log.d("log",
-//                        "Volume " + am.getStreamVolume(AudioManager.STREAM_MUSIC));
-//                break;
-
         }
     }
     private String time(long milisek){
@@ -449,12 +438,103 @@ if(!frags){
         Log.d("log", "onPrepared");
         mp.start();
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_music_list, menu);
+        return true;
+    }
+    private AudioList sorts(AudioList audioList, final String forWhat){
+        boolean all = audioList.isAllfile();
+        ArrayList<Trek> arrayList = new ArrayList<>();
+        for(int i = 0; i<audioList.size();i++){
+            Trek trek = new Trek();
+            trek.setId(audioList.getId().get(i));
+            trek.setTitle(audioList.getTitle().get(i));
+            trek.setAlbume(audioList.getAlbume().get(i));
+            trek.setArtist(audioList.getArtist().get(i));
+            trek.setDuration(audioList.getDuration().get(i));
+            arrayList.add(trek);
+        }
+        Collections.sort(arrayList, new Comparator<Trek>() {
+            @Override
+            public int compare(Trek lhs, Trek rhs) {
+                if (forWhat.equals("duration")) {
+                    if (lhs.getDuration() < rhs.getDuration()) {
+                        return 1;
+                    }
+                    if (lhs.getDuration() > rhs.getDuration()) {
+                        return -1;
+                    }
+                    return 0;
+                }
+                if (forWhat.equals("title")) {
+                    return lhs.getTitle().toString().compareTo(rhs.getTitle().toString());
+                }
+                if (forWhat.equals("artist")) {
+                    return lhs.getArtist().toString().compareTo(rhs.getArtist().toString());
+                }
+                if (forWhat.equals("albume")) {
+                    return lhs.getAlbume().toString().compareTo(rhs.getAlbume().toString());
+                }
 
 
+                return 0;
+            }
+        });
+        ArrayList<Long> duration = new ArrayList<>();
+        ArrayList<Integer> id= new ArrayList<>();
+        ArrayList<String> title= new ArrayList<>();
+        ArrayList<String> artist= new ArrayList<>();
+        ArrayList<String> albume= new ArrayList<>();
+
+        for(int i = 0; i<arrayList.size();i++){
+            duration.add(arrayList.get(i).getDuration());
+            id.add(arrayList.get(i).getId());
+            title.add(arrayList.get(i).getTitle());
+            artist.add(arrayList.get(i).getArtist());
+            albume.add(arrayList.get(i).getAlbume());
+
+        }
+
+        audioList.setDuration(duration);
+        audioList.setAlbume(albume);
+        audioList.setArtist(artist);
+        audioList.setTitle(title);
+        audioList.setId(id);
+        audioList.setAllfile(all);
+
+        return  audioList;}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        String sort = "";
+        switch (item.getItemId()){
+
+            case(R.id.free):
+                sort = "";
+                break;
+            case (R.id.sort_duration):
+                sort = "duration";
+                break;
+            case (R.id.sort_artist):
+                sort = "artist";
+                break;
+            case (R.id.sort_album):
+               sort = "albume";
+                break;
+        }
+        audioList = sorts(createListObj(trek), sort);
+        mediaPlayer.stop();
+        boxAdapter = new BoxAdapter(CONTEXT, audioList,-1);
+        if(!frags){
+            ((ListView) musikPlay.getView().findViewById(R.id.listView2)).setAdapter(boxAdapter);}
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void itemClick(int position) {
         pos = position;
+        boxAdapter.Up(position);
         playMusicAndSet(audioList, pos);
     }
 }
