@@ -66,8 +66,9 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     boolean frags =false;
     Button rand;
     Button rem;
+    Button folgerButton;
     PlaybackMode playbackMode;
-Toolbar toolbarl;
+    Toolbar toolbarl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -89,6 +90,7 @@ Toolbar toolbarl;
         name = (TextView) findViewById(R.id.name);
         album = (TextView) findViewById(R.id.albumtitle);
         artist = (TextView) findViewById(R.id.artisttitle);
+        folgerButton = (Button) findViewById(R.id.folger);
         audioList = new AudioList();
         mediaPlayer = new MediaPlayer();
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -263,6 +265,13 @@ Toolbar toolbarl;
         if (mediaPlayer == null)
             return;
         switch (view.getId()) {
+            case R.id.all:
+                trek = null;
+                audioList = createListObj(trek);
+                boxAdapter = new BoxAdapter(CONTEXT, audioList,-1);
+                if(!frags){
+                    ((ListView) musikPlay.getView().findViewById(R.id.listView2)).setAdapter(boxAdapter);}
+                break;
             case R.id.folger:
                 if(frags){
                     if (FileManegerM.LISTMUSIK != null) {
@@ -275,12 +284,13 @@ Toolbar toolbarl;
                     audioList = createListObj(trek);
                     boxAdapter = new BoxAdapter(CONTEXT, audioList,-1);
                     frags = false;
+                    folgerButton.setBackgroundResource(R.drawable.ic_folger);
                 }else{
                     fTrans = getFragmentManager().beginTransaction();
                     fTrans.replace(R.id.linearLayout1, fileManegerM);
                     fTrans.commit();
                     frags =true;
-
+                    folgerButton.setBackgroundResource(R.drawable.ic_add);
                 }
                 break;
             case R.id.play:
@@ -459,6 +469,7 @@ Toolbar toolbarl;
             @Override
             public int compare(Trek lhs, Trek rhs) {
                 if (forWhat.equals("duration")) {
+                    if(lhs == null|rhs == null){return 0;}
                     if (lhs.getDuration() < rhs.getDuration()) {
                         return 1;
                     }
@@ -468,12 +479,15 @@ Toolbar toolbarl;
                     return 0;
                 }
                 if (forWhat.equals("title")) {
+                    if(lhs.getTitle() == null|rhs.getTitle() == null){return 0;}
                     return lhs.getTitle().toString().compareTo(rhs.getTitle().toString());
                 }
                 if (forWhat.equals("artist")) {
+                    if(lhs.getArtist() == null|rhs.getArtist() == null){return 0;}
                     return lhs.getArtist().toString().compareTo(rhs.getArtist().toString());
                 }
                 if (forWhat.equals("albume")) {
+                    if(lhs.getAlbume() == null|rhs.getAlbume() == null){return 0;}
                     return lhs.getAlbume().toString().compareTo(rhs.getAlbume().toString());
                 }
 

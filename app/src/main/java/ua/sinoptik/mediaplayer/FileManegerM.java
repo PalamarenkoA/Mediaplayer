@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.io.File;
@@ -18,8 +19,9 @@ public class FileManegerM extends Fragment {
     private ArrayList<String> directoryList;
     private ListView listView;
     private ArrayList<String> fileList;
-    private File fileNew;
+
     static File LISTMUSIK;
+    private Button back;
 
    @Override
     public void onCreate(Bundle savedInstanceState){
@@ -33,12 +35,15 @@ public class FileManegerM extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_file_maneger_m, container, false);
+        back = (Button) v.findViewById(R.id.button);
+
         listView = (ListView) v.findViewById(R.id.listView3);
         createListAndClicable(currentDirectory);
+
         return v;
     }
 
-    private void createListAndClicable(File file){
+    private void createListAndClicable(final File file){
         if( file.isDirectory()) {
             fileList = new ArrayList();
             directoryList = new ArrayList();
@@ -53,6 +58,14 @@ public class FileManegerM extends Fragment {
 
 
         }
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!(file.getPath().equals("/")) ){
+                 createListAndClicable(file.getParentFile());
+                }
+            }
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
