@@ -35,7 +35,7 @@ public class MusikPlay extends Fragment {
     ListView listView;
     File[] trek;
     AudioList audioList;
-    BoxAdapter boxAdapter;
+    static BoxAdapter boxAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +51,7 @@ public class MusikPlay extends Fragment {
         audioList = createListObj(trek);
 
         boxAdapter = new BoxAdapter(v.getContext(), audioList,-1);
-        boxAdapter.notifyDataSetChanged();
+
 
         listView = (ListView) v.findViewById(R.id.listView2);
         listView.setAdapter(boxAdapter);
@@ -60,6 +60,7 @@ public class MusikPlay extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 listener.itemClick(position);
                 boxAdapter.Up(position);
+                listView.smoothScrollToPosition(position);
 
 
             }
