@@ -23,7 +23,6 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.blinkenlights.jid3.ID3Exception;
 import org.blinkenlights.jid3.MP3File;
 import org.blinkenlights.jid3.MediaFile;
 
@@ -421,6 +420,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 try {
                     title.add(folder[i].getName().substring(0, folder[i].getName().length()-4));
                     id.add(i);
@@ -429,7 +429,10 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                     album.add(oMediaFile.getID3V2Tag().getAlbum());
                     artist.add(oMediaFile.getID3V2Tag().getArtist());
 
-                } catch (ID3Exception e) {
+                } catch (Exception e) {
+                    album.add("");
+                    artist.add("");
+
                     e.printStackTrace();
                 }
 
