@@ -19,6 +19,7 @@ public class BoxAdapter extends BaseAdapter {
     AudioList audioList;
     int play;
 
+
     BoxAdapter(Context context, AudioList audioList,int play) {
         ctx = context;
         this.audioList = audioList;
