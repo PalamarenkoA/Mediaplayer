@@ -1,4 +1,4 @@
-package ua.sinoptik.mediaplayer;
+package ua.sinoptik.mediaplayer.Objects;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -10,7 +10,7 @@ public class MusikFilter implements FileFilter {
 
     String ext;
 
-    MusikFilter(String ext) {
+    public MusikFilter(String ext) {
         this.ext = ext;
     }
 

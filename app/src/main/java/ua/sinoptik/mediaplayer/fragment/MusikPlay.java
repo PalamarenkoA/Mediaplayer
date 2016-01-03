@@ -1,4 +1,4 @@
-package ua.sinoptik.mediaplayer;
+package ua.sinoptik.mediaplayer.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -11,14 +11,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import ua.sinoptik.mediaplayer.MusicList;
+import ua.sinoptik.mediaplayer.R;
+
 
 public class MusikPlay extends Fragment {
     final String LOG_TAG = "myLogs";
     public interface onItemClickListener {
         public void itemClick(int position);
     }
-
-    ListView listView;
+    public ListView listView;
 
 
     @Override

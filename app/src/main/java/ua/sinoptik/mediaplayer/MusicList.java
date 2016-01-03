@@ -34,6 +34,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 
+import ua.sinoptik.mediaplayer.Adapter.BoxAdapter;
+import ua.sinoptik.mediaplayer.Objects.AudioList;
+import ua.sinoptik.mediaplayer.Objects.MusikFilter;
+import ua.sinoptik.mediaplayer.Objects.PlaybackMode;
+import ua.sinoptik.mediaplayer.Objects.Trek;
+import ua.sinoptik.mediaplayer.fragment.FileManegerM;
+import ua.sinoptik.mediaplayer.fragment.MusikPlay;
+
 
 public class MusicList extends AppCompatActivity implements MediaPlayer.OnPreparedListener,
       MusikPlay.onItemClickListener {
@@ -43,7 +51,8 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
 
 
     public static BoxAdapter boxAdapter;
-    static int pos = 0;
+    public static int pos = 0;
+    public static Context CONTEXT;
     boolean play = false;
     AudioList audioList;
     static boolean allfile = false;
@@ -62,7 +71,6 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     TextView album;
     TextView artist;
     Handler durationUp;
-    static Context CONTEXT;
     FragmentTransaction fTrans;
     MusikPlay musikPlay;
     FileManegerM fileManegerM;

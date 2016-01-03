@@ -1,4 +1,4 @@
-package ua.sinoptik.mediaplayer;
+package ua.sinoptik.mediaplayer.Objects;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package ua.sinoptik.mediaplayer;
+package ua.sinoptik.mediaplayer.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
+import ua.sinoptik.mediaplayer.R;
+
 /**
  * Created by Админ on 02.01.2016.
  */
@@ -20,7 +22,7 @@ public class FileAdapter extends BaseAdapter {
     ArrayList<String> name;
 
 
-    FileAdapter(Context context, ArrayList name) {
+    public FileAdapter(Context context, ArrayList name) {
         ctx = context;
         this.name = name;
         lInflater = (LayoutInflater) ctx

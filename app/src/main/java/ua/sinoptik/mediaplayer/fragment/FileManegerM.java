@@ -1,4 +1,4 @@
-package ua.sinoptik.mediaplayer;
+package ua.sinoptik.mediaplayer.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -12,15 +12,18 @@ import android.widget.ListView;
 import java.io.File;
 import java.util.ArrayList;
 
+import ua.sinoptik.mediaplayer.Adapter.FileAdapter;
+import ua.sinoptik.mediaplayer.MusicList;
+import ua.sinoptik.mediaplayer.R;
+
 
 public class FileManegerM extends Fragment {
+    public static File LISTMUSIK;
     private File currentDirectory = new File("/sdcard/");
     private FileAdapter arrayAdapter;
     private ArrayList<String> directoryList;
     private ListView listView;
     private ArrayList<String> fileList;
-
-    static File LISTMUSIK;
     private Button back;
 
    @Override

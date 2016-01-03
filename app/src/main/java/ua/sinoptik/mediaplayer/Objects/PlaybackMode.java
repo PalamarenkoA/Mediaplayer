@@ -1,4 +1,4 @@
-package ua.sinoptik.mediaplayer;
+package ua.sinoptik.mediaplayer.Objects;
 
 /**
  * Created by Админ on 31.12.2015.

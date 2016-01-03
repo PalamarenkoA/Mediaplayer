@@ -1,4 +1,4 @@
-package ua.sinoptik.mediaplayer;
+package ua.sinoptik.mediaplayer.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.Date;
 
+import ua.sinoptik.mediaplayer.Objects.AudioList;
+import ua.sinoptik.mediaplayer.R;
+
 /**
  * Created by Админ on 27.12.2015.
  */
@@ -20,7 +23,7 @@ public class BoxAdapter extends BaseAdapter {
     int play;
 
 
-    BoxAdapter(Context context, AudioList audioList,int play) {
+    public BoxAdapter(Context context, AudioList audioList, int play) {
         ctx = context;
         this.audioList = audioList;
         this.play = play;
