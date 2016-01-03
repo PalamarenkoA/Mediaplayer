@@ -49,8 +49,11 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     static boolean allfile = false;
     Button playB;
     private SeekBar seekBar;
-    boolean click = false;
-    int sek;
+    int  seekmod = 0;
+    final int SEEKGO = 1;
+    final int SEEKSTOP = 2;
+    final int SEEKCLIK = 3;
+
     File[] trek;
     MusikFilter musikFilter;
     TextView duration;
@@ -69,6 +72,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     Button folgerButton;
     PlaybackMode playbackMode;
     Toolbar toolbarl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -130,24 +134,18 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+            if(fromUser){
+            seekmod = SEEKCLIK;}
         }
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
+        seekmod = SEEKCLIK;
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            if (mediaPlayer.isPlaying()) {
 
-                mediaPlayer.seekTo(seekBar.getProgress());
-
-                sek = seekBar.getProgress();
-
-
-            }
 
         }
     });
@@ -156,33 +154,38 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     }
 
     private void progres() {
-        if (!click) {
+        switch (seekmod){
+            case SEEKCLIK:
+                mediaPlayer.seekTo(seekBar.getProgress());
+                seekmod = SEEKGO;
+                break;
+            case SEEKGO:
+                durationUp.sendEmptyMessage(0);
+                try {
+                    seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                } catch (Exception e) {
+                    Log.d("зег", "ошибос");
+                    e.printStackTrace();
+                }
+                break;
 
-            durationUp.sendEmptyMessage(0);
-
-
-            try {
-                seekBar.setProgress(mediaPlayer.getCurrentPosition());
-            } catch (Exception e) {
-                Log.d("зег", "ошибос");
-                e.printStackTrace();
-            }
-
-
-
-
-
-
-            new Thread(new Runnable() {
+            case SEEKSTOP:
+                break;}
+  new Thread(new Runnable() {
 
                 public void run() {
-
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     progres();
+
                 }
             }).start();
 
         }
-    }
+
 
     private void showMusicFragment() {
 
@@ -203,6 +206,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     }
 
     private void playMusicAndSet(final AudioList audioList, final int position) {
+        seekmod = SEEKSTOP;
         if (audioList.isAllfile()) {
             DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));
         } else {
@@ -213,7 +217,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         size.setText(time(audioList.getDuration().get(pos)));
         album.setText(audioList.getAlbume().get(pos));
        artist.setText(audioList.getArtist().get(pos));
-        click = true;
+
 
         if (mediaPlayer != null) {
             try {
@@ -231,16 +235,16 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
                 switch (playbackMode.Mode()) {
                     case 1:
                         playMusicAndSet(audioList, pos);
-                    break;
+                        break;
                     case 2:
                         int rand = (int) (Math.random() * audioList.getId().size());
-                        if(rand == pos & audioList.getId().size()>1){
-                         rand = (int) (Math.random() * audioList.getId().size());
+                        if (rand == pos & audioList.getId().size() > 1) {
+                            rand = (int) (Math.random() * audioList.getId().size());
                         }
                         playMusicAndSet(audioList, changePos(rand));
-                    break;
+                        break;
                     case 3:
-                      playMusicAndSet(audioList, changePos(pos += 1));
+                        playMusicAndSet(audioList, changePos(pos += 1));
                     break;
             }
         }});
@@ -256,8 +260,9 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         }
         playB.setBackgroundResource(R.drawable.ic_stop);
         play = false;
-        click = false;
+        seekmod = SEEKGO;
         progres();
+
 
     }
 
