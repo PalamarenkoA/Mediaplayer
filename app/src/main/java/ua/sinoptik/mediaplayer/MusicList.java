@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -80,7 +81,8 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     Button folgerButton;
     PlaybackMode playbackMode;
     Toolbar toolbarl;
-
+    Intent intent;
+    File file;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -108,7 +110,16 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
 
         musikFilter = new MusikFilter("хай");
-        audioList = createListObj(trek);
+        intent = getIntent();
+        if(intent.getData() != null) {
+            File [] file = {new File(String.valueOf(intent.getData()))};
+            trek = file;
+                }
+
+
+
+            audioList = createListObj(trek);
+
         boxAdapter = new BoxAdapter(CONTEXT, audioList,-1);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seekClik();
@@ -142,13 +153,14 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if(fromUser){
-            seekmod = SEEKCLIK;}
+            if (fromUser) {
+                seekmod = SEEKCLIK;
+            }
         }
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-        seekmod = SEEKCLIK;
+            seekmod = SEEKCLIK;
         }
 
         @Override
@@ -218,7 +230,13 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         if (audioList.isAllfile()) {
             DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));
         } else {
-            DataUri = Uri.fromFile(trek[new Integer(String.valueOf(audioList.getId().get(position)))]);
+            if(intent != null){
+                    DataUri = intent.getData();
+                    intent = null;
+
+
+            }else{
+            DataUri = Uri.fromFile(trek[new Integer(String.valueOf(audioList.getId().get(position)))]);}
 
         }
         name.setText(audioList.getTitle().get(pos));
