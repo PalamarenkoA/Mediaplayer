@@ -56,7 +56,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     public static Context CONTEXT;
     boolean play = false;
     AudioList audioList;
-    static boolean allfile = false;
+
     Button playB;
     private SeekBar seekBar;
     int  seekmod = 0;
@@ -82,7 +82,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
     PlaybackMode playbackMode;
     Toolbar toolbarl;
     Intent intent;
-    File file;
+    Uri intentUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -112,6 +112,7 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         musikFilter = new MusikFilter("хай");
         intent = getIntent();
         if(intent.getData() != null) {
+            intentUri = intent.getData();
             File [] file = {new File(String.valueOf(intent.getData()))};
             trek = file;
                 }
@@ -230,11 +231,9 @@ public class MusicList extends AppCompatActivity implements MediaPlayer.OnPrepar
         if (audioList.isAllfile()) {
             DataUri = ContentUris.withAppendedId(android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, audioList.getId().get(position));
         } else {
-            if(intent != null){
-                    DataUri = intent.getData();
-                    intent = null;
-
-
+            if(intentUri!=null){
+                    DataUri = intentUri;
+                    intentUri = null;
             }else{
             DataUri = Uri.fromFile(trek[new Integer(String.valueOf(audioList.getId().get(position)))]);}
 
